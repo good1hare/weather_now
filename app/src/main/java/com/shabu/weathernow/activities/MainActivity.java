@@ -1,23 +1,15 @@
 package com.shabu.weathernow.activities;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-import com.shabu.weathernow.BuildConfig;
-import com.shabu.weathernow.R;
-import com.shabu.weathernow.models.WeatherCard;
-import com.shabu.weathernow.rest.ApiService;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentManager;
 
-import android.view.View;
-
-import android.view.Menu;
-import android.view.MenuItem;
+import com.shabu.weathernow.R;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -36,29 +28,26 @@ public class MainActivity extends AppCompatActivity {
         mCardsFragment = new CardsFragment();
         mFragmentManager.beginTransaction().replace(R.id.fragment_container, mCardsFragment).commit();
     }
-    public void toastError(){
-
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+        switch(item.getItemId()){
+            case R.id.action_add:
+                mCardsFragment.showAlertForAddCity();
+                return true;
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
+    }
 
-        return super.onOptionsItemSelected(item);
+    public void toastError(){
+        Toast.makeText(this, "Ой, вы сделали что-то не так :(", Toast.LENGTH_SHORT).show();
     }
 }

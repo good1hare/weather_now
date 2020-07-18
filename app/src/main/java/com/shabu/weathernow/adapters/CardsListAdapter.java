@@ -54,8 +54,8 @@ public class CardsListAdapter extends BaseAdapter {
     }
     ButterKnife.bind(this, convertView);
 
-    itemName.setText("Место: " + card.getLocation().getName());
-    itemExec.setText("Температура: " + card.getCurrent().getTemperature());
+    itemName.setText("Город: " + card.getLocation().getName());
+    itemExec.setText("Температура: " + card.getCurrent().getTemperature() + " \u2103");
     itemDesc.setText("Ветер: " + card.getCurrent().getWind_speed() + " м/с");
     return convertView;
   }
