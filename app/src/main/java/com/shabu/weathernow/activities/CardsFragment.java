@@ -70,21 +70,6 @@ public class CardsFragment extends Fragment {
         mListViewCards = (ListView) mViewCards.findViewById(R.id.lv_cards);
         mRelativeView= (RelativeLayout) mViewCards.findViewById(R.id.relative_container);
         cities = new ArrayList<>();
-        //cites = db.getWeatherCardDao().getAllName();
-        /*db.getWeatherCardDao().getAllName()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(cities -> {
-                    this.cities = cities;
-                    if (cities.isEmpty()) {
-                        cities.add("Казань");
-                        cities.add("Набережные Челны");
-                        cities.add("Елабуга");
-                    }
-                    getAllCards();
-                }, throwable -> {
-                    throwable.printStackTrace();
-                    toastError();
-                });*/
         Completable.fromAction(new Action() {
             @Override
             public void run() throws Exception {
@@ -105,10 +90,6 @@ public class CardsFragment extends Fragment {
 
                     }
                 });
-        //cities.add("Казань");
-        //cities.add("Набережные Челны");
-        //cities.add("Елабуга");
-        //getAllCards();
     }
 
     @SuppressLint("CheckResult")
@@ -137,9 +118,6 @@ public class CardsFragment extends Fragment {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(card -> {
                         insertInBD(card,finalI == size - 1 ? true : false );
-                        //db.getWeatherCardDao().insert(card);
-                        //addCardInList(card);
-                        //populateAdapter();
                     }, throwable -> {
                         throwable.printStackTrace();
                         toastNotInternet();

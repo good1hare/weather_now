@@ -10,16 +10,10 @@ import com.shabu.weathernow.models.WeatherCard;
 
 import java.util.List;
 
-import io.reactivex.Flowable;
-import io.reactivex.Single;
-
 @Dao
 public interface WeatherCardDao {
     @Query("SELECT * FROM WeatherCard")
     List<WeatherCard> getAllCards();
-
-    //@Query("SELECT * FROM WeatherCard WHERE id = :id")
-    //WeatherCard getById(long id);
 
     @Query("SELECT name FROM WeatherCard")
     List<String> getAllName();
