@@ -65,7 +65,7 @@ public class CardsFragment extends Fragment {
 
     @SuppressLint("CheckResult")
     public void initComponents() {
-        db = Room.databaseBuilder(mContext, AppDatabase.class, "weather_cards-database").build();
+        db = Room.databaseBuilder(mContext, AppDatabase.class, "weather_cards-database").allowMainThreadQueries().build();
         mCardsList = new ArrayList<>();
         mListViewCards = (ListView) mViewCards.findViewById(R.id.lv_cards);
         mRelativeView= (RelativeLayout) mViewCards.findViewById(R.id.relative_container);
@@ -73,13 +73,13 @@ public class CardsFragment extends Fragment {
         Completable.fromAction(new Action() {
             @Override
             public void run() throws Exception {
+                //в итоге я не понял почему после закрытия приложения и повторного его откртия бд не возвращает данные
                     cities = db.getWeatherCardDao().getAllName();
                     if (cities.isEmpty()) {
                         cities.add("Казань");
                         cities.add("Набережные Челны");
                         cities.add("Елабуга");
                     }
-                    getAllCards();
 
             }
         }).subscribeOn(Schedulers.io())
@@ -87,7 +87,7 @@ public class CardsFragment extends Fragment {
                 .subscribe(new Action() {
                     @Override
                     public void run() throws Exception {
-
+                        getAllCards();
                     }
                 });
     }
@@ -176,7 +176,7 @@ public class CardsFragment extends Fragment {
 
     //показываем список
     public void populateAdapter() throws InterruptedException {
-        Thread.sleep(1000);
+        Thread.sleep(500);
         if (getActivity() != null) {
             if (mContext != null) {
                 tvNoCards.setVisibility(View.GONE);
@@ -246,5 +246,11 @@ public class CardsFragment extends Fragment {
     public void onResume() {
         super.onResume();
         getAllCards();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
     }
 }
