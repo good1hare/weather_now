@@ -1,7 +1,12 @@
 package com.shabu.weathernow.models;
 
+import androidx.room.Embedded;
+import androidx.room.Entity;
+import androidx.room.Ignore;
+
 public class Current
 {
+    @Ignore
     private String[] weather_descriptions;
 
     private String observation_time;
@@ -10,6 +15,7 @@ public class Current
 
     private String visibility;
 
+    @Ignore
     private String[] weather_icons;
 
     private String feelslike;
@@ -192,11 +198,5 @@ public class Current
     public void setWeather_code (String weather_code)
     {
         this.weather_code = weather_code;
-    }
-
-    @Override
-    public String toString()
-    {
-        return "ClassPojo [weather_descriptions = "+weather_descriptions+", observation_time = "+observation_time+", wind_degree = "+wind_degree+", visibility = "+visibility+", weather_icons = "+weather_icons+", feelslike = "+feelslike+", is_day = "+is_day+", wind_dir = "+wind_dir+", pressure = "+pressure+", cloudcover = "+cloudcover+", precip = "+precip+", uv_index = "+uv_index+", temperature = "+temperature+", humidity = "+humidity+", wind_speed = "+wind_speed+", weather_code = "+weather_code+"]";
     }
 }

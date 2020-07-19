@@ -16,12 +16,14 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.room.Room;
 
 import com.shabu.weathernow.BuildConfig;
 import com.shabu.weathernow.R;
 import com.shabu.weathernow.adapters.CardsListAdapter;
 import com.shabu.weathernow.models.WeatherCard;
 import com.shabu.weathernow.rest.ApiService;
+import com.shabu.weathernow.sql.AppDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,9 +40,9 @@ public class CardsFragment extends Fragment {
     private Context mContext;
     private View mViewCards;
     private ListView mListViewCards;
-   // private View itemAdd;
     ArrayList<String> cites;
     ApiService mApiService = new ApiService();
+    AppDatabase db;
 
 
     @Override
@@ -48,9 +50,7 @@ public class CardsFragment extends Fragment {
         setRetainInstance(true);
         mViewCards = inflater.inflate(R.layout.fragment_cards, container, false);
         tvNoCards = mViewCards.findViewById(R.id.text_no_cards);
-       // itemAdd = inflater.inflate(R.layout.activity_main, container, false).findViewById(R.id.action_add);
         initComponents();
-        //setListeners();
         return mViewCards;
     }
 
@@ -60,6 +60,7 @@ public class CardsFragment extends Fragment {
     }
 
     public void initComponents() {
+        db = Room.databaseBuilder(mContext, AppDatabase.class, "weather_cards-database").build();
         mCardsList = new ArrayList<>();
         cites = new ArrayList<>();
         //cites.add("Казань");
@@ -104,7 +105,6 @@ public class CardsFragment extends Fragment {
         if (getActivity() != null) {
             if (mContext != null) {
                 tvNoCards.setVisibility(View.GONE);
-                mListViewCards.setAdapter(null);
                 CardsListAdapter cardsListAdapter = new CardsListAdapter(mCardsList, getActivity());
                 mListViewCards.setAdapter(cardsListAdapter);
                 mListViewCards.requestLayout();

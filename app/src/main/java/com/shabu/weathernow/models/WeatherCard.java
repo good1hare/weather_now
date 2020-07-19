@@ -1,17 +1,35 @@
 package com.shabu.weathernow.models;
 
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+import androidx.room.Embedded;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
+@Entity
 public class WeatherCard
 {
 
+  @PrimaryKey(autoGenerate = true)
+  public long id;
+
+  @Embedded
   private Request request;
 
+  @Embedded
   private Current current;
 
+  @Embedded
   private Location location;
+
+  public long getId ()
+  {
+    return id;
+  }
+
+  public void setId (long id)
+  {
+    this.id = id;
+  }
 
   public Request getRequest ()
   {
@@ -43,9 +61,4 @@ public class WeatherCard
     this.location = location;
   }
 
-  @Override
-  public String toString()
-  {
-    return "ClassPojo [request = "+request+", current = "+current+", location = "+location+"]";
-  }
 }

@@ -1,5 +1,7 @@
 package com.shabu.weathernow.models;
 
+import androidx.room.Entity;
+
 public class Request
 {
     private String unit;
@@ -48,11 +50,5 @@ public class Request
     public void setType (String type)
     {
         this.type = type;
-    }
-
-    @Override
-    public String toString()
-    {
-        return "ClassPojo [unit = "+unit+", query = "+query+", language = "+language+", type = "+type+"]";
     }
 }

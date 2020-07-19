@@ -1,5 +1,7 @@
 package com.shabu.weathernow.models;
 
+import androidx.room.Entity;
+
 public class Location
 {
     private String localtime;
@@ -108,11 +110,5 @@ public class Location
     public void setLat (String lat)
     {
         this.lat = lat;
-    }
-
-    @Override
-    public String toString()
-    {
-        return "ClassPojo [localtime = "+localtime+", utc_offset = "+utc_offset+", country = "+country+", localtime_epoch = "+localtime_epoch+", name = "+name+", timezone_id = "+timezone_id+", lon = "+lon+", region = "+region+", lat = "+lat+"]";
     }
 }

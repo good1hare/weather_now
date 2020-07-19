@@ -6,8 +6,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.shabu.weathernow.R;
+import com.shabu.weathernow.activities.MainActivity;
 import com.shabu.weathernow.models.WeatherCard;
 
 import java.util.List;
@@ -54,9 +56,16 @@ public class CardsListAdapter extends BaseAdapter {
     }
     ButterKnife.bind(this, convertView);
 
-    itemName.setText("Город: " + card.getLocation().getName());
-    itemExec.setText("Температура: " + card.getCurrent().getTemperature() + " \u2103");
-    itemDesc.setText("Ветер: " + card.getCurrent().getWind_speed() + " м/с");
+    try {
+      itemName.setText("Город: " + card.getLocation().getName());
+      itemExec.setText("Температура: " + card.getCurrent().getTemperature() + " \u2103");
+      itemDesc.setText("Ветер: " + card.getCurrent().getWind_speed() + " м/с");
+    } catch (Exception e){
+      itemName.setText("(>_<)");
+      itemExec.setText("Подумайте что вы сделали не так!" );
+      itemDesc.setText(" " );
+    }
+
     return convertView;
   }
 }
