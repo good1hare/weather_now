@@ -1,7 +1,5 @@
 package com.shabu.weathernow.models;
 
-import androidx.room.Entity;
-
 public class Request
 {
     private String unit;

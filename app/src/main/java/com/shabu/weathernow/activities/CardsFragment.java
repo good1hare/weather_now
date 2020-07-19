@@ -176,7 +176,7 @@ public class CardsFragment extends Fragment {
 
     //показываем список
     public void populateAdapter() throws InterruptedException {
-        Thread.sleep(500);
+        Thread.sleep(1000);
         if (getActivity() != null) {
             if (mContext != null) {
                 tvNoCards.setVisibility(View.GONE);

@@ -1,7 +1,5 @@
 package com.shabu.weathernow.models;
 
-import androidx.room.Embedded;
-import androidx.room.Entity;
 import androidx.room.Ignore;
 
 public class Current

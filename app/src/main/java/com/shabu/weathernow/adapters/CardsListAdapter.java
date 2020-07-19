@@ -6,10 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.shabu.weathernow.R;
-import com.shabu.weathernow.activities.MainActivity;
 import com.shabu.weathernow.models.WeatherCard;
 
 import java.util.List;

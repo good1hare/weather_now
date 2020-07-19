@@ -2,6 +2,7 @@ package com.shabu.weathernow.rest;
 
 
 import com.shabu.weathernow.models.WeatherCard;
+
 import io.reactivex.Observable;
 
 public class ApiService implements IApiService {
