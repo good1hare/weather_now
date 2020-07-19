@@ -22,7 +22,7 @@ public interface WeatherCardDao {
     //WeatherCard getById(long id);
 
     @Query("SELECT name FROM WeatherCard")
-    Flowable<List<String>> getAllName();
+    List<String> getAllName();
 
     @Insert
     void insert(WeatherCard card);

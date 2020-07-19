@@ -3,6 +3,8 @@ package com.shabu.weathernow.activities;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -83,10 +85,30 @@ public class CardsFragment extends Fragment {
                     throwable.printStackTrace();
                     toastError();
                 });*/
-        cities.add("Казань");
-        cities.add("Набережные Челны");
-        cities.add("Елабуга");
-        getAllCards();
+        Completable.fromAction(new Action() {
+            @Override
+            public void run() throws Exception {
+                    cities = db.getWeatherCardDao().getAllName();
+                    if (cities.isEmpty()) {
+                        cities.add("Казань");
+                        cities.add("Набережные Челны");
+                        cities.add("Елабуга");
+                    }
+                    getAllCards();
+
+            }
+        }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action() {
+                    @Override
+                    public void run() throws Exception {
+
+                    }
+                });
+        //cities.add("Казань");
+        //cities.add("Набережные Челны");
+        //cities.add("Елабуга");
+        //getAllCards();
     }
 
     @SuppressLint("CheckResult")
@@ -94,7 +116,9 @@ public class CardsFragment extends Fragment {
         Completable.fromAction(new Action() {
             @Override
             public void run() throws Exception {
-                db.clearAllTables();
+                if(hasConnection(mContext)){
+                    db.clearAllTables();
+                }
             }
         }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -119,6 +143,8 @@ public class CardsFragment extends Fragment {
                     }, throwable -> {
                         throwable.printStackTrace();
                         toastNotInternet();
+                        showOfDB();
+                        return;
                     });
         }
 
@@ -126,7 +152,7 @@ public class CardsFragment extends Fragment {
     }
 
     @SuppressLint("CheckResult")
-    public void insertInBD(WeatherCard card, boolean flag){
+    public void insertInBD(WeatherCard card, boolean flagLastStage){
         Completable.fromAction(new Action() {
             @Override
             public void run() throws Exception {
@@ -139,9 +165,27 @@ public class CardsFragment extends Fragment {
                 .subscribe(new Action() {
                     @Override
                     public void run() throws Exception {
-                        if(flag){
+                        if(flagLastStage){
                             populateAdapter();
                         }
+                    }
+                });
+    }
+
+    @SuppressLint("CheckResult")
+    public void showOfDB(){
+        Completable.fromAction(new Action() {
+            @Override
+            public void run() throws Exception {
+                mCardsList = db.getWeatherCardDao().getAllCards();
+
+            }
+        }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        populateAdapter();
                     }
                 });
     }
@@ -152,13 +196,9 @@ public class CardsFragment extends Fragment {
         super.onAttach(context);
     }
 
-    //формируем список
-    public void addCardInList(WeatherCard card) {
-        mCardsList.add(card);
-    }
-
     //показываем список
-    public void populateAdapter() {
+    public void populateAdapter() throws InterruptedException {
+        Thread.sleep(1000);
         if (getActivity() != null) {
             if (mContext != null) {
                 tvNoCards.setVisibility(View.GONE);
@@ -195,6 +235,27 @@ public class CardsFragment extends Fragment {
         alert.show();
     }
 
+    public static boolean hasConnection(final Context context)
+    {
+        ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        if (wifiInfo != null && wifiInfo.isConnected())
+        {
+            return true;
+        }
+        wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        if (wifiInfo != null && wifiInfo.isConnected())
+        {
+            return true;
+        }
+        wifiInfo = cm.getActiveNetworkInfo();
+        if (wifiInfo != null && wifiInfo.isConnected())
+        {
+            return true;
+        }
+        return false;
+    }
+
     public void toastError(){
         Toast.makeText(mContext, "Ой, вы сделали что-то не так :(", Toast.LENGTH_SHORT).show();
     }
@@ -203,4 +264,9 @@ public class CardsFragment extends Fragment {
         Toast.makeText(mContext, "Ой, вы забыли включить интернет", Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        getAllCards();
+    }
 }
