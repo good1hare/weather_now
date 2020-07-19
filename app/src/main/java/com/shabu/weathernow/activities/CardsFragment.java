@@ -70,45 +70,21 @@ public class CardsFragment extends Fragment {
         mListViewCards = (ListView) mViewCards.findViewById(R.id.lv_cards);
         mRelativeView= (RelativeLayout) mViewCards.findViewById(R.id.relative_container);
         cities = new ArrayList<>();
-        Completable.fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-                //в итоге я не понял почему после закрытия приложения и повторного его откртия бд не возвращает данные
-                    cities = db.getWeatherCardDao().getAllName();
-                    if (cities.isEmpty()) {
-                        cities.add("Казань");
-                        cities.add("Набережные Челны");
-                        cities.add("Елабуга");
-                    }
-
-            }
-        }).subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action() {
-                    @Override
-                    public void run() throws Exception {
-                        getAllCards();
-                    }
-                });
+        cities = db.getWeatherCardDao().getAllName();
+        if (cities.isEmpty()) {
+            cities.add("Казань");
+            cities.add("Набережные Челны");
+            cities.add("Елабуга");
+        }
+        getAllCards();
     }
 
     @SuppressLint("CheckResult")
     private void getAllCards() {
-        Completable.fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-                if(hasConnection(mContext)){
-                    db.clearAllTables();
-                }
-            }
-        }).subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action() {
-                    @Override
-                    public void run() throws Exception {
+        if(hasConnection(mContext)){
+            db.clearAllTables();
+        }
 
-                    }
-                });
         int size = cities.size();
         for(int i = 0; i < size; i++){
             int finalI = i;
@@ -117,7 +93,7 @@ public class CardsFragment extends Fragment {
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(card -> {
-                        insertInBD(card,finalI == size - 1 ? true : false );
+                        insertInBD(card,finalI == size - 1 ? true : false, cities.get(finalI));
                     }, throwable -> {
                         throwable.printStackTrace();
                         toastNotInternet();
@@ -125,47 +101,23 @@ public class CardsFragment extends Fragment {
                         return;
                     });
         }
-
-        //populateAdapter();
     }
 
     @SuppressLint("CheckResult")
-    public void insertInBD(WeatherCard card, boolean flagLastStage){
-        Completable.fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-                db.getWeatherCardDao().insert(card);
-                mCardsList = db.getWeatherCardDao().getAllCards();
+    public void insertInBD(WeatherCard card, boolean flagLastStage, String city) throws InterruptedException {
+        db.getWeatherCardDao().insert(card);
+        mCardsList = db.getWeatherCardDao().getAllCards();
+        if(flagLastStage){
+            populateAdapter();
+        }
 
-            }
-        }).subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action() {
-                    @Override
-                    public void run() throws Exception {
-                        if(flagLastStage){
-                            populateAdapter();
-                        }
-                    }
-                });
     }
 
     @SuppressLint("CheckResult")
-    public void showOfDB(){
-        Completable.fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-                mCardsList = db.getWeatherCardDao().getAllCards();
+    public void showOfDB() throws InterruptedException {
+        mCardsList = db.getWeatherCardDao().getAllCards();
+        populateAdapter();
 
-            }
-        }).subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action() {
-                    @Override
-                    public void run() throws Exception {
-                        populateAdapter();
-                    }
-                });
     }
 
     @Override
@@ -176,7 +128,7 @@ public class CardsFragment extends Fragment {
 
     //показываем список
     public void populateAdapter() throws InterruptedException {
-        Thread.sleep(1000);
+        //Thread.sleep(1000);
         if (getActivity() != null) {
             if (mContext != null) {
                 tvNoCards.setVisibility(View.GONE);

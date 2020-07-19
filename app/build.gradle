@@ -23,13 +23,13 @@ android {
         debug{
             minifyEnabled false
             buildConfigField("String", "BASE_URL", '"http://api.weatherstack.com/"')
-            buildConfigField("String", "ACCESS_KEY", '"d144c53dc3420fbfa17a9e8799d14670"')
+            buildConfigField("String", "ACCESS_KEY", '"26b35889eaac812289b37c0f2fe7a2d2"')
         }
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             buildConfigField("String", "BASE_URL", '"http://api.weatherstack.com/"')
-            buildConfigField("String", "ACCESS_KEY", '"d144c53dc3420fbfa17a9e8799d14670"')
+            buildConfigField("String", "ACCESS_KEY", '"26b35889eaac812289b37c0f2fe7a2d2"')
         }
     }
 }
