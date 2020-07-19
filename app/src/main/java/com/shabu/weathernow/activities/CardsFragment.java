@@ -29,7 +29,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
+import io.reactivex.Completable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Action;
 import io.reactivex.schedulers.Schedulers;
 
 public class CardsFragment extends Fragment {
@@ -40,7 +42,7 @@ public class CardsFragment extends Fragment {
     private Context mContext;
     private View mViewCards;
     private ListView mListViewCards;
-    ArrayList<String> cites;
+    List<String> cities;
     ApiService mApiService = new ApiService();
     AppDatabase db;
 
@@ -59,34 +61,89 @@ public class CardsFragment extends Fragment {
         ButterKnife.bind(this, view);
     }
 
+    @SuppressLint("CheckResult")
     public void initComponents() {
         db = Room.databaseBuilder(mContext, AppDatabase.class, "weather_cards-database").build();
         mCardsList = new ArrayList<>();
-        cites = new ArrayList<>();
-        //cites.add("Казань");
-        cites.add("Набережные Челны");
-        //cites.add("Елабуга");
         mListViewCards = (ListView) mViewCards.findViewById(R.id.lv_cards);
         mRelativeView= (RelativeLayout) mViewCards.findViewById(R.id.relative_container);
-
+        cities = new ArrayList<>();
+        //cites = db.getWeatherCardDao().getAllName();
+        /*db.getWeatherCardDao().getAllName()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(cities -> {
+                    this.cities = cities;
+                    if (cities.isEmpty()) {
+                        cities.add("Казань");
+                        cities.add("Набережные Челны");
+                        cities.add("Елабуга");
+                    }
+                    getAllCards();
+                }, throwable -> {
+                    throwable.printStackTrace();
+                    toastError();
+                });*/
+        cities.add("Казань");
+        cities.add("Набережные Челны");
+        cities.add("Елабуга");
         getAllCards();
     }
 
     @SuppressLint("CheckResult")
     private void getAllCards() {
-        for(int i = 0; i < cites.size(); i++){
+        Completable.fromAction(new Action() {
+            @Override
+            public void run() throws Exception {
+                db.clearAllTables();
+            }
+        }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action() {
+                    @Override
+                    public void run() throws Exception {
+
+                    }
+                });
+        int size = cities.size();
+        for(int i = 0; i < size; i++){
+            int finalI = i;
             mApiService
-                    .get_current_weather(BuildConfig.ACCESS_KEY, cites.get(i))
+                    .get_current_weather(BuildConfig.ACCESS_KEY, cities.get(i))
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(card -> {
-                        addCardInList(card);
-                        populateAdapter();
+                        insertInBD(card,finalI == size - 1 ? true : false );
+                        //db.getWeatherCardDao().insert(card);
+                        //addCardInList(card);
+                        //populateAdapter();
                     }, throwable -> {
                         throwable.printStackTrace();
-                        toastError();
+                        toastNotInternet();
                     });
         }
+
+        //populateAdapter();
+    }
+
+    @SuppressLint("CheckResult")
+    public void insertInBD(WeatherCard card, boolean flag){
+        Completable.fromAction(new Action() {
+            @Override
+            public void run() throws Exception {
+                db.getWeatherCardDao().insert(card);
+                mCardsList = db.getWeatherCardDao().getAllCards();
+
+            }
+        }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        if(flag){
+                            populateAdapter();
+                        }
+                    }
+                });
     }
 
     @Override
@@ -126,7 +183,7 @@ public class CardsFragment extends Fragment {
                 dialog.dismiss();
             }else{
                 //делаем что надо
-                cites.add(editText.getText().toString());
+                cities.add(editText.getText().toString());
                 getAllCards();
             }
         });
@@ -140,6 +197,10 @@ public class CardsFragment extends Fragment {
 
     public void toastError(){
         Toast.makeText(mContext, "Ой, вы сделали что-то не так :(", Toast.LENGTH_SHORT).show();
+    }
+
+    public void toastNotInternet(){
+        Toast.makeText(mContext, "Ой, вы забыли включить интернет", Toast.LENGTH_SHORT).show();
     }
 
 }
